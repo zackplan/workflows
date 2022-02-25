@@ -166,31 +166,31 @@ jobs:
         run: ${{ inputs.package_manager }} ${{ inputs.package_manager == 'npm' && 'ci' || 'install --frozen-lockfile' }}
 
       - name: Run Lint 👓
-        if: inputs.lint == 'true'
+        if: inputs.lint == true
         run: ${{ inputs.package_manager }} run ${{ inputs.lint_script }}
         continue-on-error: ${{ github.event.inputs.lint_continue_on_error }}
 
       - name: Run Check 🔎
-        if: inputs.check == 'true'
+        if: inputs.check == true
         run: ${{ inputs.package_manager }} run ${{ inputs.check_script }}
         continue-on-error: ${{ github.event.inputs.check_continue_on_error }}
 
       - name: Run Test ✅
-        if: inputs.test == 'true'
+        if: inputs.test == true
         run: ${{ inputs.package_manager }} run ${{ inputs.test_script }}
         continue-on-error: ${{ github.event.inputs.test_continue_on_error }}
 
       - name: Run Build 🏗
-        if: inputs.build == 'true'
+        if: inputs.build == true
         run: ${{ inputs.package_manager }} run ${{ inputs.build_script }}
         continue-on-error: ${{ github.event.inputs.build_continue_on_error }}
 
       - name: Compress Build Output 📦
-        if: inputs.build_upload == 'true'
+        if: inputs.build_upload == true
         run: tar -czf _build.tar.gz ${{ inputs.output_dir }}
 
       - name: Upload Compressed Build Output ⬆️
-        if: inputs.build_upload == 'true'
+        if: inputs.build_upload == true
         uses: actions/upload-artifact@v2
         with:
           name: ${{ inputs.build_upload_name }}
