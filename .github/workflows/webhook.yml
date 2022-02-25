@@ -1,0 +1,25 @@
+name: Webhook Workflow 🔗
+
+on:
+  workflow_call:
+    secrets:
+      url:
+        description: Webhook URL to call
+        required: true
+
+      secret:
+        description: Secret used to verify that the webhook is coming from GitHub (see https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks)
+        required: false
+
+jobs:
+  call-webhook:
+    name: Call Webhook 📞
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Webhook 📞
+        uses: distributhor/workflow-webhook@6edfd7cdaf8e0551b717bab8912c8d910475b98f # pin@v2.0.2
+        env:
+          webhook_url: ${{ secrets.url }}
+          webhook_secret: ${{ secrets.secret || github.sha }}
+          silent: true

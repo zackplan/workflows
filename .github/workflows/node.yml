@@ -90,17 +90,18 @@ on:
         required: false
         default: false
 
-      build_output_directory:
-        description: Directory where the built files are (for example "dist")
-        type: string
-        required: false
-        default: dist
 
       build_upload:
         description: Whether to upload the built files as an artifact
         type: boolean
         required: false
         default: false
+
+      build_upload_directory:
+        description: Directory to upload (for example "dist")
+        type: string
+        required: false
+        default: dist
 
       build_upload_name:
         description: Name of the artifact for the uploaded build files
@@ -146,7 +147,8 @@ jobs:
           (
             inputs.build_upload == true &&
             (
-              inputs.build_output_directory == '' ||
+              inputs.build == false ||
+              inputs.build_upload_directory == '' ||
               inputs.build_upload_name == '' ||
               inputs.build_upload_retention_days < 1 ||
               inputs.build_upload_retention_days > 90
@@ -188,7 +190,7 @@ jobs:
 
       - name: Compress Build Output 📦
         if: inputs.build_upload == true
-        run: tar -czf _build.tar.gz ${{ inputs.output_dir }}
+        run: tar -czf _build.tar.gz ${{ inputs.build_upload_directory }}
 
       - name: Upload Compressed Build Output ⬆️
         if: inputs.build_upload == true

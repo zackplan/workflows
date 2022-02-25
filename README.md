@@ -30,26 +30,27 @@ lint-test-and-build:
 
 ### Inputs
 
-| Name                          | Required | Type                                       | Default   | Description                                                      | 
-|-------------------------------|----------|--------------------------------------------|-----------|------------------------------------------------------------------|
-| `node_version`                | ✓        | `string`                                   |           | Node version to use                                              |
-| `package_manager`             |          | `string` (`"npm"` or `"pnpm"` or `"yarn"`) | `"npm"`   | Package manager to use                                           |
-| `lint`                        |          | `boolean`                                  | `false`   | Whether to do linting                                            |
-| `lint_script`                 |          | `string`                                   | `"lint"`  | Name of the script in package.json that does linting             |
-| `lint_continue_on_error`      |          | `boolean`                                  | `false`   | Whether to continue when an error occurs while doing linting     |
-| `check`                       |          | `boolean`                                  | `false`   | Whether to run checks                                            |
-| `check_script`                |          | `string`                                   | `"check"` | Name of the script in package.json that runs checks              |
-| `check_continue_on_error`     |          | `boolean`                                  | `false`   | Whether to continue when an error occurs while running checks    |
-| `test`                        |          | `boolean`                                  | `false`   | Whether to run tests                                             |
-| `test_script`                 |          | `string`                                   | `"test"`  | Name of the script in package.json that runs tests               |
-| `test_continue_on_error`      |          | `boolean`                                  | `false`   | Whether to continue when an error occurs while running tests     |
-| `build`                       |          | `boolean`                                  | `false`   | Whether to run the build                                         |
-| `build_script`                |          | `string`                                   | `"build"` | Name of the script in package.json that runs the build           |
-| `build_continue_on_error`     |          | `boolean`                                  | `false`   | Whether to continue when an error occurs while running the build |
-| `build_output_directory`      |          | `string`                                   | `"dist"`  | Directory where the built files are (for example "dist")         |
-| `build_upload`                |          | `boolean`                                  | `false`   | Whether to upload the built files as an artifact                 |
-| `build_upload_name`           |          | `string`                                   | `"build"` | Name of the artifact for the uploaded build files                |
-| `build_upload_retention_days` |          | `number`                                   | `1`       | How many days to keep the artifact for the uploaded build files  |
+| Name                          | Required | Type                                     | Default   | Description                                                      | 
+|-------------------------------|----------|------------------------------------------|-----------|------------------------------------------------------------------|
+| `node_version`                | ✓        | `string`                                 |           | Node version to use                                              |
+| `package_manager`             |          | `string` (`"npm"`, `"pnpm"` or `"yarn"`) | `"npm"`   | Package manager to use                                           |
+| `lint`                        |          | `boolean`                                | `false`   | Whether to do linting                                            |
+| `lint_script`                 |          | `string`                                 | `"lint"`  | Name of the script in package.json that does linting             |
+| `lint_continue_on_error`      |          | `boolean`                                | `false`   | Whether to continue when an error occurs while doing linting     |
+| `check`                       |          | `boolean`                                | `false`   | Whether to run checks                                            |
+| `check_script`                |          | `string`                                 | `"check"` | Name of the script in package.json that runs checks              |
+| `check_continue_on_error`     |          | `boolean`                                | `false`   | Whether to continue when an error occurs while running checks    |
+| `test`                        |          | `boolean`                                | `false`   | Whether to run tests                                             |
+| `test_script`                 |          | `string`                                 | `"test"`  | Name of the script in package.json that runs tests               |
+| `test_continue_on_error`      |          | `boolean`                                | `false`   | Whether to continue when an error occurs while running tests     |
+| `build`                       |          | `boolean`                                | `false`   | Whether to run the build                                         |
+| `build_script`                |          | `string`                                 | `"build"` | Name of the script in package.json that runs the build           |
+| `build_continue_on_error`     |          | `boolean`                                | `false`   | Whether to continue when an error occurs while running the build |
+| `build_upload`                |          | `boolean`                                | `false`   | Whether to upload the built files as an artifact                 |
+| `build_upload_directory`      |          | `string`                                 | `"dist"`  | Directory to upload (for example "dist")                         |
+| `build_upload_name`           |          | `string`                                 | `"build"` | Name of the artifact for the uploaded build files                |
+| `build_upload_retention_days` |          | `number`                                 | `1`       | How many days to keep the artifact for the uploaded build files  |
+
 
 ## `docker.yml` - WIP
 
@@ -71,3 +72,24 @@ docker-workflow:
 | `image_name` | ✓        | `string` |             | Name of the built docker image                  |
 | `context`    |          | `string` | `"."`       | Context for the build (where the Dockerfile is) |
 | `registry`   |          | `string` | `"ghcr.io"` | Docker registry to upload the image to          |
+
+
+## `webhook.yml` - WIP
+
+### How to use
+
+Add the following to your workflow:
+```yaml
+webhook-workflow:
+  name: Webhook Workflow 🔗
+  uses: zackplan/workflows/.github/workflows/webhook.yml@main
+  with:
+    url: https://example.com
+```
+
+### Secrets
+
+| Name     | Required | Description                                                                                                                                                      |
+|----------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `url`    | ✓        | Webhook URL to call                                                                                                                                              |
+| `secret` |          | Secret used to verify that the webhook is coming from GitHub<br/>(see https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks) |
