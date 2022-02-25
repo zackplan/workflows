@@ -11,13 +11,13 @@ on:
       context:
         description: Context for the build (where the Dockerfile is)
         type: string
-        required: true
+        required: false
         default: .
 
       registry:
         description: Docker registry to upload the image to
         type: string
-        required: true
+        required: false
         default: ghcr.io
 
 jobs:

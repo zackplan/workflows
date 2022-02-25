@@ -52,5 +52,5 @@ docker-workflow:
 | Name         | Required | Type     | Default     | Description                                     |
 |--------------|----------|----------|-------------|-------------------------------------------------|
 | `image_name` | ✓        | `string` |             | Name of the built docker image                  |
-| `context`    | ✓        | `string` | `"."`       | Context for the build (where the Dockerfile is) |
-| `registry`   | ✓        | `string` | `"ghcr.io"` | Docker registry to upload the image to          |
+| `context`    |          | `string` | `"."`       | Context for the build (where the Dockerfile is) |
+| `registry`   |          | `string` | `"ghcr.io"` | Docker registry to upload the image to          |
