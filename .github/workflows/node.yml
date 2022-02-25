@@ -1,0 +1,200 @@
+name: Node.js Workflow 📝
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        description: Node version to use
+        type: string
+        required: true
+        default: 16.x
+
+      package_manager:
+        description: Package manager to use (one of "npm", "pnpm" or "yarn")
+        type: string
+        required: true
+        default: npm
+
+
+      lint_enabled:
+        description: Whether to do linting
+        type: boolean
+        required: false
+        default: true
+
+      lint_script:
+        description: Name of the script in package.json that does linting
+        type: string
+        required: false
+        default: lint
+
+      lint_continue_on_error:
+        description: Whether to continue when an error occurs while doing linting
+        type: boolean
+        required: false
+        default: false
+
+
+      check_enabled:
+        description: Whether to run checks
+        type: boolean
+        required: false
+        default: false
+
+      check_script:
+        description: Name of the script in package.json that runs checks
+        type: string
+        required: false
+        default: check
+
+      check_continue_on_error:
+        description: Whether to continue when an error occurs while running checks
+        type: boolean
+        required: false
+        default: false
+
+
+      test_enabled:
+        description: Whether to run tests
+        type: boolean
+        required: false
+        default: true
+
+      test_script:
+        description: Name of the script in package.json that runs tests
+        type: string
+        required: false
+        default: test
+
+      test_continue_on_error:
+        description: Whether to continue when an error occurs while running tests
+        type: boolean
+        required: false
+        default: false
+
+
+      build_enabled:
+        description: Whether to run the build
+        type: boolean
+        required: false
+        default: true
+
+      build_script:
+        description: Name of the script in package.json that runs the build
+        type: string
+        required: false
+        default: build
+
+      build_continue_on_error:
+        description: Whether to continue when an error occurs while running the build
+        type: boolean
+        required: false
+        default: false
+
+      build_output_directory:
+        description: Directory where the built files are (for example "dist")
+        type: string
+        required: false
+        default: dist
+
+      build_upload_enabled:
+        description: Whether to upload the built files as an artifact
+        type: boolean
+        required: false
+        default: false
+
+      build_upload_name:
+        description: Name of the artifact for the uploaded build files
+        type: string
+        required: false
+        default: build
+
+      build_upload_retention_days:
+        description: How many days to keep the uploaded build files
+        type: number
+        required: false
+        default: 1
+
+jobs:
+  lint-check-test-and-build:
+    name: Lint 👓, Check 🔎, Test ✅ & Build 🏗
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Workflow Inputs 💬
+        if: |
+          (
+            inputs.package_manager != 'npm' &&
+            inputs.package_manager != 'pnpm' &&
+            inputs.package_manager != 'yarn'
+          ) ||
+          (
+            inputs.lint_enabled == 'true' &&
+            inputs.lint_script == ''
+          ) ||
+          (
+            inputs.check_enabled == 'true' &&
+            inputs.check_script == ''
+          ) ||
+          (
+            inputs.test_enabled == 'true' &&
+            inputs.test_script == ''
+          ) ||
+          (
+            inputs.build_enabled == 'true' &&
+            inputs.build_script == ''
+          ) ||
+          (
+            inputs.build_upload == 'true' &&
+            (
+              inputs.build_output_directory == '' ||
+              inputs.build_upload_name == '' ||
+              inputs.build_upload_retention_days == ''
+            )
+          )
+        run: echo "Invalid workflow inputs!" && exit 1
+
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js 🛠
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+
+      - name: Install Dependencies ⬇️
+        run: ${{ inputs.package_manager }} ${{ inputs.package_manager == 'npm' && 'ci' || 'install --frozen-lockfile' }}
+
+      - name: Run Lint 👓
+        if: inputs.lint_enabled == 'true'
+        run: ${{ inputs.package_manager }} run ${{ inputs.lint_script }}
+        continue-on-error: ${{ inputs.lint_continue_on_error }}
+
+      - name: Run Check 🔎
+        if: inputs.check_enabled == 'true'
+        run: ${{ inputs.package_manager }} run ${{ inputs.check_script }}
+        continue-on-error: ${{ inputs.check_continue_on_error }}
+
+      - name: Run Test ✅
+        if: inputs.test_enabled == 'true'
+        run: ${{ inputs.package_manager }} run ${{ inputs.test_script }}
+        continue-on-error: ${{ inputs.test_continue_on_error }}
+
+      - name: Run Build 🏗
+        if: inputs.build_enabled == 'true'
+        run: ${{ inputs.package_manager }} run ${{ inputs.build_script }}
+        continue-on-error: ${{ inputs.build_continue_on_error }}
+
+      - name: Compress Build Output 📦
+        if: inputs.build_upload_enabled == 'true'
+        run: tar -czf _build.tar.gz ${{ inputs.output_dir }}
+
+      - name: Upload Compressed Build Output ⬆️
+        if: inputs.build_upload_enabled == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.build_upload_name }}
+          path: _build.tar.gz
+          retention-days: ${{ inputs.build_upload_retention_days }}
+

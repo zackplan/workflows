@@ -1,0 +1,63 @@
+name: Docker Workflow 🐳
+
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        description: Name of the built docker image
+        type: string
+        required: true
+
+      context:
+        description: Context for the build (where the Dockerfile is)
+        type: string
+        required: true
+        default: .
+
+      registry:
+        description: Docker registry to upload the image to
+        type: string
+        required: true
+        default: ghcr.io
+
+jobs:
+  build-docker-image:
+    name: Build Docker Image 🏗
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Setup QEMU 🛠
+        uses: docker/setup-qemu-action@v1
+
+      - name: Setup Buildx 🛠
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Registry 🔐
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Metadata for Docker 📄
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ inputs.registry }}/${{ inputs.image_name }}
+          tags: |
+            type=raw,value=latest
+
+      - name: Build & Push Image 🏗
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ inputs.context }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
