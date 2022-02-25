@@ -11,6 +11,21 @@ Add the following to your workflow:
 node-js-workflow:
   name: Node.js Workflow 📝
   uses: zackplan/workflows/.github/workflows/node.yml@main
+  with:
+    node_version: 16
+```
+
+### Example
+
+```yaml
+lint-test-and-build:
+  name: Lint 👓, Test ✅ & Build 🏗
+  uses: zackplan/workflows/.github/workflows/node.yml@main
+  with:
+    node_version: 16
+    lint: true
+    test: true
+    build: true
 ```
 
 ### Inputs
@@ -45,6 +60,8 @@ Add the following to your workflow:
 docker-workflow:
   name: Docker Workflow 🐳
   uses: zackplan/workflows/.github/workflows/docker.yml@main
+  with:
+    image_name: vendor/image
 ```
 
 ### Inputs

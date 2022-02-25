@@ -128,27 +128,28 @@ jobs:
             inputs.package_manager != 'yarn'
           ) ||
           (
-            inputs.lint == 'true' &&
+            inputs.lint == true &&
             inputs.lint_script == ''
           ) ||
           (
-            inputs.check == 'true' &&
+            inputs.check == true &&
             inputs.check_script == ''
           ) ||
           (
-            inputs.test == 'true' &&
+            inputs.test == true &&
             inputs.test_script == ''
           ) ||
           (
-            inputs.build == 'true' &&
+            inputs.build == true &&
             inputs.build_script == ''
           ) ||
           (
-            inputs.build_upload == 'true' &&
+            inputs.build_upload == true &&
             (
               inputs.build_output_directory == '' ||
               inputs.build_upload_name == '' ||
-              inputs.build_upload_retention_days == ''
+              inputs.build_upload_retention_days < 1 ||
+              inputs.build_upload_retention_days > 90
             )
           )
         run: echo "Invalid workflow inputs!" && exit 1
