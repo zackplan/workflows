@@ -10,7 +10,7 @@ Add the following to your workflow:
 ```yaml
 node-js-workflow:
   name: Node.js Workflow 📝
-  uses: zackplan/workflows/.github/workflows/node.yml@main
+  uses: zackplan/workflows/.github/workflows/nodejs.yml@main
   with:
     node_version: 16
 ```
@@ -20,7 +20,7 @@ node-js-workflow:
 ```yaml
 lint-test-and-build:
   name: Lint 👓, Test ✅ & Build 🏗
-  uses: zackplan/workflows/.github/workflows/node.yml@main
+  uses: zackplan/workflows/.github/workflows/nodejs.yml@main
   with:
     node_version: 16
     lint: true
