@@ -171,22 +171,30 @@ jobs:
       - name: Run Lint 👓
         if: inputs.lint == true
         run: ${{ inputs.package_manager }} run ${{ inputs.lint_script }}
-        continue-on-error: ${{ github.event.inputs.lint_continue_on_error }}
+        env:
+          lint_continue_on_error: ${{ inputs.lint_continue_on_error == true }}
+        continue-on-error: ${{ env.lint_continue_on_error == 'true' }} # Little hack because "inputs" is not available here
 
       - name: Run Check 🔎
         if: inputs.check == true
         run: ${{ inputs.package_manager }} run ${{ inputs.check_script }}
-        continue-on-error: ${{ github.event.inputs.check_continue_on_error }}
+        env:
+          check_continue_on_error: ${{ inputs.check_continue_on_error == true }}
+        continue-on-error: ${{ env.check_continue_on_error == 'true' }}
 
       - name: Run Test ✅
         if: inputs.test == true
         run: ${{ inputs.package_manager }} run ${{ inputs.test_script }}
-        continue-on-error: ${{ github.event.inputs.test_continue_on_error }}
+        env:
+          test_continue_on_error: ${{ inputs.test_continue_on_error == true }}
+        continue-on-error: ${{ env.test_continue_on_error == 'true' }}
 
       - name: Run Build 🏗
         if: inputs.build == true
         run: ${{ inputs.package_manager }} run ${{ inputs.build_script }}
-        continue-on-error: ${{ github.event.inputs.build_continue_on_error }}
+        env:
+          build_continue_on_error: ${{ inputs.build_continue_on_error == true }}
+        continue-on-error: ${{ env.build_continue_on_error == 'true' }}
 
       - name: Compress Build Output 📦
         if: inputs.build_upload == true
