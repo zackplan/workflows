@@ -18,7 +18,7 @@ on:
         description: Whether to install the dependencies in the order specified in the requirements file
         type: boolean
         required: false
-        default: true
+        default: false
 
 
       blender:
@@ -43,7 +43,7 @@ on:
         description: Whether to install the dependencies for blender in the order specified in the requirements file
         type: boolean
         required: false
-        default: true
+        default: false
 
 
       lint:
