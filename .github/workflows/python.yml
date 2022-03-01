@@ -138,10 +138,10 @@ jobs:
         run: echo "Invalid workflow inputs!" && exit 1
 
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # pin@v2.4.0
 
       - name: Setup Python 🛠
-        uses: actions/setup-python@v3.0.0
+        uses: actions/setup-python@0ebf233433c08fb9061af664d501c3f3ff0e9e20 # pin@v3.0.0
         with:
           python-version: ${{ inputs.python_version }}
           cache: pip
@@ -149,7 +149,7 @@ jobs:
       - name: Cache Blender ${{ inputs.blender_version }} ♻️
         if: inputs.blender == true
         id: blender-cache
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # pin@v2.1.7
         with:
           path: |
             blender-*
@@ -162,15 +162,15 @@ jobs:
         run: |
           # Add installation dependencies
           pip install --upgrade blender-downloader pytest pytest-blender pip-autoremove
-          
+
           # Download blender and store the executable paths
           echo "$(blender-downloader ${{ inputs.blender_version }} --extract --remove-compressed --quiet --print-blender-executable)" > .blender-executable
           echo "$(pytest-blender --blender-executable $(< .blender-executable tr -d '\n'))" > .python-executable
-          
+
           # Remove installation dependencies
           pip-autoremove -y blender-downloader pytest pytest-blender
           pip uninstall -y pip-autoremove
-          
+
           # Install required dependencies for the python executable used by blender
           python_executable="$(< .python-executable tr -d '\n')"
           $python_executable -m ensurepip
@@ -196,4 +196,3 @@ jobs:
             ${{ inputs.blender == true && '--blender-executable="$(< .blender-executable tr -d '\n')"' || '' }} \
             ${{ inputs.test_directory }}
         continue-on-error: ${{ github.event.inputs.test_continue_on_error }}
-
