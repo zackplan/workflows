@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       node_version:
-        description: Node version to use
+        description: Node.js version to use
         type: string
         required: true
 
@@ -116,7 +116,7 @@ on:
         default: 1
 
 jobs:
-  run-npm-scripts:
+  run_npm_scripts:
     name: Run NPM Scripts 📝
     runs-on: ubuntu-latest
 

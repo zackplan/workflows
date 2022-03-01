@@ -1,0 +1,199 @@
+name: Python Workflow 🐍
+
+on:
+  workflow_call:
+    inputs:
+      python_version:
+        description: Python version to use
+        type: string
+        required: true
+
+      requirements_file:
+        description: Text file containing the list of required dependencies
+        type: string
+        required: false
+        default: ./requirements.txt
+
+      pip_install_in_order:
+        description: Whether to install the dependencies in the order specified in the requirements file
+        type: boolean
+        required: false
+        default: true
+
+
+      blender:
+        description: Whether to setup blender and use pytest-blender for testing
+        type: boolean
+        required: false
+        default: false
+
+      blender_version:
+        description: Blender version to use
+        type: string
+        required: false
+        default: 3.0.0
+
+      blender_requirements_file:
+        description: Text file containing the list of required dependencies for blender
+        type: string
+        required: false
+        default: ./requirements.txt
+
+      blender_pip_install_in_order:
+        description: Whether to install the dependencies for blender in the order specified in the requirements file
+        type: boolean
+        required: false
+        default: true
+
+
+      lint:
+        description: Whether to do linting
+        type: boolean
+        required: false
+        default: false
+
+      lint_flake8:
+        description: Whether to do linting using flake8 (needs to be specified in the requirements file)
+        type: boolean
+        required: false
+        default: false
+
+      lint_autopep8:
+        description: Whether to do linting using autopep8 (needs to be specified in the requirements file)
+        type: boolean
+        required: false
+        default: false
+
+      lint_continue_on_error:
+        description: Whether to continue when an error occurs while doing linting
+        type: boolean
+        required: false
+        default: false
+
+
+      test:
+        description: Whether to run tests using pytest
+        type: boolean
+        required: false
+        default: false
+
+      test_verbosity:
+        description: Verbosity level ("--verbosity" option)
+        type: number
+        required: false
+        default: 2
+
+      test_capture_method:
+        description: Per-test capturing method ("--capture" option - one of "fd", "sys", "no" or "tee-sys")
+        type: string
+        required: false
+        default: no
+
+      test_directory:
+        description: Directory that contains the test files
+        type: string
+        required: false
+        default: ./
+
+      test_continue_on_error:
+        description: Whether to continue when an error occurs while running tests
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  run_python_scripts:
+    name: Run Python Scripts 📝
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Workflow Inputs 💬
+        if: |
+          inputs.requirements_file == '' ||
+          (
+            inputs.blender == true &&
+            (
+              inputs.blender_version == '' ||
+              inputs.blender_requirements_file == ''
+            )
+          )
+          (
+            inputs.lint == true &&
+            inputs.lint_flake8 == false &&
+            inputs.lint_autopep8 == false
+          )  ||
+          (
+            inputs.test == true &&
+            (
+              inputs.test_verbosity < 0 ||
+              inputs.test_directory == '' ||
+              (
+                inputs.test_capture_method != 'fd' &&
+                inputs.test_capture_method != 'sys' &&
+                inputs.test_capture_method != 'tee-sys' &&
+                inputs.test_capture_method != 'no'
+              )
+            )
+          )
+        run: echo "Invalid workflow inputs!" && exit 1
+
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.4.0
+
+      - name: Setup Python 🛠
+        uses: actions/setup-python@v3.0.0
+        with:
+          python-version: ${{ inputs.python_version }}
+          cache: pip
+
+      - name: Cache Blender ${{ inputs.blender_version }} ♻️
+        if: inputs.blender == true
+        id: blender-cache
+        uses: actions/cache@v2.1.7
+        with:
+          path: |
+            blender-*
+            .blender-executable
+            .python-executable
+          key: Blender-${{ runner.os }}-${{ inputs.blender_version }}
+
+      - name: Setup Blender ${{ inputs.blender_version }} ⬇️
+        if: inputs.blender == true && steps.blender-cache.outputs.cache-hit != 'true'
+        run: |
+          # Add installation dependencies
+          pip install --upgrade blender-downloader pytest pytest-blender pip-autoremove
+          
+          # Download blender and store the executable paths
+          echo "$(blender-downloader ${{ inputs.blender_version }} --extract --remove-compressed --quiet --print-blender-executable)" > .blender-executable
+          echo "$(pytest-blender --blender-executable $(< .blender-executable tr -d '\n'))" > .python-executable
+          
+          # Remove installation dependencies
+          pip-autoremove -y blender-downloader pytest pytest-blender
+          pip uninstall -y pip-autoremove
+          
+          # Install required dependencies for the python executable used by blender
+          python_executable="$(< .python-executable tr -d '\n')"
+          $python_executable -m ensurepip
+          ${{ inputs.blender_pip_install_in_order == true && 'xargs -L 1 $python_executable -m pip install <' || '$python_executable -m pip install -r' }} ${{ inputs.blender_requirements_file }}
+
+      - name: Install Dependencies ⬇️
+        run: ${{ inputs.pip_install_in_order == true && 'xargs -L 1 pip install <' || 'pip install -r' }} ${{ inputs.requirements_file }}
+
+      - name: Run Lint 👓
+        if: inputs.lint == true
+        run: |
+          ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
+          ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
+          ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
+        continue-on-error: ${{ github.event.inputs.lint_continue_on_error }}
+
+      - name: Run Test ✅
+        if: inputs.test == true
+        run: |
+          pytest \
+            --verbosity=${{ inputs.test_verbosity }} \
+            --capture=${{ inputs.test_capture_method }} \
+            ${{ inputs.blender == true && '--blender-executable="$(< .blender-executable tr -d '\n')"' || '' }} \
+            ${{ inputs.test_directory }}
+        continue-on-error: ${{ github.event.inputs.test_continue_on_error }}
+
