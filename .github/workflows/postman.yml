@@ -18,6 +18,42 @@ on:
         type: string
         required: false
 
+
+      wait:
+        description: Whether to wait before running the integration test
+        type: boolean
+        required: false
+        default: false
+
+      wait_seconds:
+        description: Amount of seconds to wait before running the integration test
+        type: number
+        required: false
+        default: 30
+
+      wait_timeout:
+        description: Maximum amount of minutes to wait
+        type: number
+        required: false
+        default: 5
+
+      wait_until_healthy:
+        description: Wait until an URL returns "200 OK", instead of waiting a specific amount of seconds before running the integration test
+        type: boolean
+        required: false
+        default: false
+
+      wait_until_healthy_url:
+        description: URL to call to check if the integration test is ready to be started
+        type: string
+        required: false
+
+      wait_until_healthy_delay:
+        description: Amount of seconds to wait between checking if the URL is healthy
+        type: number
+        required: false
+        default: 5
+
     secrets:
       api_key:
         description: API Key used to load the resources from the Postman API
@@ -29,6 +65,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # pin@v2.4.0
+
+      - name: Wait ${{ inputs.wait_until_healthy == true && 'until healthy' || format('{0} seconds', inputs.wait_seconds) }} 💤
+        if: inputs.wait == true
+        shell: bash
+        run: |
+          if [ "${{ inputs.wait_until_healthy }}" == "true" ]; then
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${{ inputs.wait_until_healthy_url }})" != "200" ]]; do
+              sleep ${{ inputs.wait_until_healthy_delay }}
+            done
+          else
+            sleep ${{ inputs.wait_seconds }}
+          fi
+        env:
+          wait_timeout: ${{ inputs.wait_timeout }}
+        timeout-minutes: ${{ env.wait_timeout }}
+
       - name: Run Integration Test 💻
         run: |
           npx newman run ${{ inputs.collection }} \
