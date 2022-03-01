@@ -53,13 +53,13 @@ on:
         default: false
 
       lint_flake8:
-        description: Whether to do linting using flake8 (needs to be specified in the requirements file)
+        description: Whether to do linting using flake8 (needs to be installed)
         type: boolean
         required: false
         default: false
 
       lint_autopep8:
-        description: Whether to do linting using autopep8 (needs to be specified in the requirements file)
+        description: Whether to do linting using autopep8 (needs to be installed)
         type: boolean
         required: false
         default: false
@@ -84,7 +84,7 @@ on:
         default: 2
 
       test_capture_method:
-        description: Per-test capturing method ("--capture" option - one of "fd", "sys", "no" or "tee-sys")
+        description: Per-test capturing method ("--capture" option - one of "fd", "sys", "tee-sys" or "no")
         type: string
         required: false
         default: no
