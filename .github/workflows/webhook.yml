@@ -22,4 +22,3 @@ jobs:
         env:
           webhook_url: ${{ secrets.url }}
           webhook_secret: ${{ secrets.secret || github.sha }}
-          silent: true
