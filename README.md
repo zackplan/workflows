@@ -124,6 +124,53 @@ docker-workflow:
 | `registry`   |          | `string` | `"ghcr.io"` | Docker registry to upload the image to          |
 
 
+## `newman.yml`
+
+### How to use
+
+Add the following to your workflow:
+```yaml
+newman-workflow:
+  name: Newman Workflow 🧑‍🚀
+  uses: zackplan/workflows/.github/workflows/newman.yml@main
+  with:
+    collection: ./collection.json
+```
+
+### Example
+
+```yaml
+integration-test:
+  name: Run Integration Test 💻
+  uses: zackplan/workflows/.github/workflows/newman.yml@main
+  with:
+    collection: ./integration-test/api.postman_collection.json
+    environment: ./integration-test/production.postman_environment.json
+    working_directory: ./integration-test
+    wait: true # Wait 30 sec
+```
+
+### Inputs
+
+| Name                       | Required | Type      | Default | Description                                                                                                              | 
+|----------------------------|----------|-----------|---------|--------------------------------------------------------------------------------------------------------------------------|
+| `collection`               | ✓        | `string`  |         | URL or path to a Postman collection                                                                                      |
+| `environment`              |          | `string`  |         | URL or path to a Postman environment                                                                                     |
+| `working_directory`        |          | `string`  |         | Path to the working directory                                                                                            |
+| `wait`                     |          | `boolean` | `false` | Whether to wait before running the integration test                                                                      |
+| `wait_seconds`             |          | `number`  | `30`    | Amount of seconds to wait before running the integration test                                                            |
+| `wait_timeout`             |          | `number`  | `5`     | Maximum amount of minutes to wait                                                                                        |
+| `wait_until_healthy`       |          | `boolean` | `false` | Wait until an URL returns "200 OK" before running the integration test (instead of waiting a specific amount of seconds) |
+| `wait_until_healthy_url`   |          | `string`  |         | URL to call to check if the integration test is ready to be started                                                      |
+| `wait_until_healthy_delay` |          | `number`  | `5`     | Amount of seconds to wait between checking if the URL is healthy                                                         |
+
+### Secrets
+
+| Name      | Required | Description                                             |
+|-----------|----------|---------------------------------------------------------|
+| `api_key` |          | API Key used to load the resources from the Postman API |
+
+
 ## `webhook.yml`
 
 ### How to use
