@@ -81,7 +81,7 @@ jobs:
           fi
         env:
           wait_timeout: ${{ inputs.wait_timeout }}
-        timeout-minutes: ${{ env.wait_timeout }}
+        timeout-minutes: ${{ fromJSON(env.wait_timeout) }}
 
       - name: Run Integration Test 💻
         run: |
