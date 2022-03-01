@@ -1,4 +1,4 @@
-name: Postman Workflow 🧑‍🚀
+name: Newman Workflow 🧑‍🚀
 
 on:
   workflow_call:
