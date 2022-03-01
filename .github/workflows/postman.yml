@@ -1,0 +1,37 @@
+name: Postman Workflow 🧑‍🚀
+
+on:
+  workflow_call:
+    inputs:
+      collection:
+        description: URL or path to a Postman collection
+        type: string
+        required: true
+
+      environment:
+        description: URL or path to a Postman environment
+        type: string
+        required: false
+
+      working_directory:
+        description: Path to the working directory
+        type: string
+        required: false
+
+    secrets:
+      api_key:
+        description: API Key used to load the resources from the Postman API
+        required: false
+
+jobs:
+  run_integration_test:
+    name: Run Integration Test 💻
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Integration Test 💻
+        run: |
+          npx newman run ${{ inputs.collection }} \
+            ${{ inputs.environment && format('--environment {0}', inputs.environment) }} \
+            ${{ inputs.working_directory && format('--working-dir {0}', inputs.working_directory) }} \
+            ${{ secrets.api_key && format('--postman-api-key {0}', secrets.api_key) }}
