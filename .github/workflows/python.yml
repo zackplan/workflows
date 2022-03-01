@@ -116,12 +116,12 @@ jobs:
               inputs.blender_version == '' ||
               inputs.blender_requirements_file == ''
             )
-          )
+          ) ||
           (
             inputs.lint == true &&
             inputs.lint_flake8 == false &&
             inputs.lint_autopep8 == false
-          )  ||
+          ) ||
           (
             inputs.test == true &&
             (
@@ -185,7 +185,9 @@ jobs:
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
           ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
-        continue-on-error: ${{ github.event.inputs.lint_continue_on_error }}
+        env:
+          lint_continue_on_error: ${{ inputs.lint_continue_on_error == true }}
+        continue-on-error: ${{ env.lint_continue_on_error == 'true' }} # Little hack because "inputs" is not available here
 
       - name: Run Test ✅
         if: inputs.test == true
@@ -193,6 +195,8 @@ jobs:
           pytest \
             --verbosity=${{ inputs.test_verbosity }} \
             --capture=${{ inputs.test_capture_method }} \
-            ${{ inputs.blender == true && '--blender-executable="$(< .blender-executable tr -d '\n')"' || '' }} \
+            ${{ inputs.blender == true && '--blender-executable "$(< .blender-executable tr -d ''\n'')"' || '' }} \
             ${{ inputs.test_directory }}
-        continue-on-error: ${{ github.event.inputs.test_continue_on_error }}
+        env:
+          test_continue_on_error: ${{ inputs.test_continue_on_error == true }}
+        continue-on-error: ${{ env.test_continue_on_error == 'true' }}
