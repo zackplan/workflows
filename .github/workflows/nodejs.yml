@@ -202,7 +202,7 @@ jobs:
 
       - name: Upload Compressed Build Output ⬆️
         if: inputs.build_upload == true
-        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # pin@v2.3.1
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # pin@v3.0.0
         with:
           name: ${{ inputs.build_upload_name }}
           path: _build.tar.gz
