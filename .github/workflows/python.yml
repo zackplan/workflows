@@ -149,7 +149,7 @@ jobs:
       - name: Cache Blender ${{ inputs.blender_version }} ♻️
         if: inputs.blender == true
         id: blender-cache
-        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # pin@v2.1.7
+        uses: actions/cache@4b0cf6cc4619e737324ddfcec08fff2413359514 # pin@v2.1.7
         with:
           path: |
             blender-*
