@@ -1,0 +1,41 @@
+name: Smoke Test Workflow 🚬
+
+on:
+  workflow_call:
+    secrets:
+      token:
+        description: PAT (Personal Access Token) used to dispatch the event in the smoke test repository
+        required: true
+
+    inputs:
+      repo:
+        description: Name of the smoke test repository
+        type: string
+        required: false
+        default: smoketest
+
+      owner:
+        description: Name of the user/organization that owns the smoke test repository
+        type: string
+        required: false
+        default: zackplan
+
+      event_type:
+        description: The type of event to emit in the smoke test repository
+        type: string
+        required: false
+        default: run_smoketest
+
+jobs:
+  dispatch_smoketest:
+    name: Dispatch Smoke Test 🚬
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dispatch Smoke Test 🚬
+        uses: mvasigh/dispatch-action@7d246d27377b345bd9c58646c51641bec9c7435c # pin@1.1.6
+        with:
+          token: ${{ secrets.token }}
+          repo: ${{ inputs.repo }}
+          owner: ${{ inputs.owner }}
+          event_type: ${{ inputs.event_type }}
