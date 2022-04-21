@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # pin@v3.0.0
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # pin@v3.0.0
 
       - name: Setup QEMU 🛠
         uses: docker/setup-qemu-action@27d0a4f181a40b142cce983c5393082c365d1480 # pin@v1.2.0
