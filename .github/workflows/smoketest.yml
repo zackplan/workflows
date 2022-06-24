@@ -25,6 +25,42 @@ on:
         type: string
         required: false
         default: run_smoketest
+      
+      
+      wait:
+        description: Whether to wait before running the smoketest
+        type: boolean
+        required: false
+        default: false
+
+      wait_seconds:
+        description: Amount of seconds to wait before running the smoketest
+        type: number
+        required: false
+        default: 30
+
+      wait_timeout:
+        description: Maximum amount of minutes to wait
+        type: number
+        required: false
+        default: 5
+
+      wait_until_healthy:
+        description: Wait until an URL returns "200 OK", instead of waiting a specific amount of seconds before running the smoketest
+        type: boolean
+        required: false
+        default: false
+
+      wait_until_healthy_url:
+        description: URL to call to check if the integration test is ready to be started
+        type: string
+        required: false
+
+      wait_until_healthy_delay:
+        description: Amount of seconds to wait between checking if the URL is healthy
+        type: number
+        required: false
+        default: 5
 
 jobs:
   dispatch_smoketest:
@@ -32,6 +68,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Wait ${{ inputs.wait_until_healthy == true && 'until healthy' || format('{0} seconds', inputs.wait_seconds) }} 💤
+        if: inputs.wait == true
+        shell: bash
+        run: |
+          if [ "${{ inputs.wait_until_healthy }}" == "true" ]; then
+            while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${{ inputs.wait_until_healthy_url }})" != "200" ]]; do
+              sleep ${{ inputs.wait_until_healthy_delay }}
+            done
+          else
+            sleep ${{ inputs.wait_seconds }}
+          fi
+        env:
+          wait_timeout: ${{ inputs.wait_timeout }}
+        timeout-minutes: ${{ fromJSON(env.wait_timeout) }}
+    
       - name: Dispatch Smoke Test 🚬
         uses: mvasigh/dispatch-action@7d246d27377b345bd9c58646c51641bec9c7435c # pin@1.1.6
         with:
