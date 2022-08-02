@@ -59,6 +59,14 @@ on:
         description: API Key used to load the resources from the Postman API
         required: false
 
+      slack_channel:
+        description: Slack channel to post error logs to
+        required: false
+
+      slack_token:
+        description: Slack token used to post error logs
+        required: false
+
 jobs:
   run_integration_test:
     name: Run Integration Test 💻
@@ -84,8 +92,26 @@ jobs:
         timeout-minutes: ${{ fromJSON(env.wait_timeout) }}
 
       - name: Run Integration Test 💻
+        id: integration-test
         run: |
           npx newman run ${{ inputs.collection }} \
             ${{ inputs.environment && format('--environment {0}', inputs.environment) }} \
             ${{ inputs.working_directory && format('--working-dir {0}', inputs.working_directory) }} \
-            ${{ secrets.api_key && format('--postman-api-key {0}', secrets.api_key) }}
+            ${{ secrets.api_key && format('--postman-api-key {0}', secrets.api_key) }} |& tee /tmp/test.stderr.log
+          echo "::set-output name=stderr::$(cat /tmp/test.stderr.log)"
+
+      - name: Notify about Error on Slack ⚠
+        if: secrets.slack_channel != '' && secrets.slack_token != '' && failure() && !cancelled()
+        uses: slackapi/slack-github-action@16b6c78ee73689a627b65332b34e5d409c7299da # pin@v1.18.0
+        with:
+          channel-id: ${{ secrets.slack_channel }}
+          slack-message: |
+            ⚠ The integration test has failed: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} ⚠
+            Please make sure everything is working as intended!
+            
+            Error log:
+            ```
+            ${{ steps.integration-test.outputs.stderr }}
+            ```
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.slack_token }}

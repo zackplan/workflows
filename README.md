@@ -166,9 +166,11 @@ integration-test:
 
 ### Secrets
 
-| Name      | Required | Description                                             |
-|-----------|----------|---------------------------------------------------------|
-| `api_key` |          | API Key used to load the resources from the Postman API |
+| Name            | Required | Description                                             |
+|-----------------|----------|---------------------------------------------------------|
+| `api_key`       |          | API Key used to load the resources from the Postman API |
+| `slack_channel` |          | Slack channel to post error logs to                     |
+| `slack_token`   |          | Slack token used to post error logs                     |
 
 
 ## `webhook.yml`
