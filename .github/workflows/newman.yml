@@ -101,7 +101,7 @@ jobs:
           echo "::set-output name=stderr::$(cat /tmp/test.stderr.log)"
 
       - name: Notify about Error on Slack ⚠
-        if: secrets.slack_channel != '' && secrets.slack_token != '' && failure() && !cancelled()
+        if: env.SLACK_BOT_CHANNEL != '' && env.SLACK_BOT_TOKEN != '' && failure() && !cancelled()
         uses: slackapi/slack-github-action@16b6c78ee73689a627b65332b34e5d409c7299da # pin@v1.18.0
         with:
           channel-id: ${{ secrets.slack_channel }}
@@ -115,3 +115,4 @@ jobs:
             ```
         env:
           SLACK_BOT_TOKEN: ${{ secrets.slack_token }}
+          SLACK_BOT_CHANNEL: ${{ secrets.slack_channel }}
