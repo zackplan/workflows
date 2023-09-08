@@ -155,7 +155,7 @@ jobs:
             blender-*
             .blender-executable
             .python-executable
-          key: Blender-${{ runner.os }}-${{ inputs.blender_version }}
+          key: Blender-${{ inputs.blender_version }}-${{ runner.os }}-${{ runner.arch }}
 
       - name: Setup Blender ${{ inputs.blender_version }} ⬇️
         if: inputs.blender == true && steps.blender-cache.outputs.cache-hit != 'true'
