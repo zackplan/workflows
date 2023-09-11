@@ -55,7 +55,7 @@ jobs:
             type=raw,value=latest
 
       - name: Build & Push Image 🏗
-        uses: docker/build-push-action@4e4ee680f69700760d5620a94c020aef883043aa # pin@v4.2.0
+        uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # pin@v4.2.1
         with:
           context: ${{ inputs.context }}
           push: true
