@@ -161,7 +161,7 @@ jobs:
       
       - name: Setup PNPM 🛠
         if: inputs.package_manager == 'pnpm'
-        uses: pnpm/action-setup@35ab4267a1a21c8e8cb1c087cf1642e891ff57bd # pin@v2.2.1
+        uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # pin@v2.4.0
         with:
           version: 6.32.6
 
