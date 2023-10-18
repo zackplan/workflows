@@ -197,7 +197,7 @@ jobs:
         if: inputs.lint == true
         run: |
           ${{ inputs.lint_ruff == true && 'ruff check .' || '' }}
-          ${{ inputs.lint_black == true && 'black --check --diff .' || '' }}
+          ${{ inputs.lint_black == true && 'black --check --diff --color .' || '' }}
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
           ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
