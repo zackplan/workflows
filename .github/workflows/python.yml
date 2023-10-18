@@ -204,17 +204,16 @@ jobs:
           set -ex
 
           # Lint using ruff
-          ${{ inputs.lint_ruff == true && 'ruff check .' || '' }}
+          ${{ inputs.lint_ruff == true && 'ruff check --show-source .' || 'echo Skipped ruff lint' }}
 
           # Lint using black
-          ${{ inputs.lint_black == true && 'black --check --diff --color .' || '' }}
+          ${{ inputs.lint_black == true && 'black --check --diff --color .' || 'echo Skipped black lint' }}
 
           # Lint using flake8
-          ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
-          ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
+          ${{ inputs.lint_flake8 == true && 'flake8 --show-source --max-complexity=10 --max-line-length=88 .' || 'echo Skipped flake8 lint' }}
 
           # Lint using autopep8
-          ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
+          ${{ inputs.lint_autopep8 == true && 'autopep8 --diff --exit-code --aggressive --aggressive --max-line-length=88 --recursive .' || 'echo Skipped autopep8 lint' }}
 
       - name: Run Test ✅
         if: inputs.test == true
