@@ -174,6 +174,8 @@ jobs:
       - name: Setup Blender ${{ inputs.blender_version }} ⬇️
         if: inputs.blender == true && steps.blender-cache.outputs.cache-hit != 'true'
         run: |
+          set -ex
+
           # Add installation dependencies
           pip install --upgrade blender-downloader pytest pytest-blender pip-autoremove
 
@@ -195,24 +197,33 @@ jobs:
 
       - name: Run Lint 👓
         if: inputs.lint == true
-        run: |
-          ${{ inputs.lint_ruff == true && 'ruff check .' || '' }}
-          ${{ inputs.lint_black == true && 'black --check --diff --color .' || '' }}
-          ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
-          ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
-          ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
         env:
           lint_continue_on_error: ${{ inputs.lint_continue_on_error == true }}
         continue-on-error: ${{ env.lint_continue_on_error == 'true' }} # Little hack because "inputs" is not available here
+        run: |
+          set -ex
+
+          # Lint using ruff
+          ${{ inputs.lint_ruff == true && 'ruff check .' || '' }}
+
+          # Lint using black
+          ${{ inputs.lint_black == true && 'black --check --diff --color .' || '' }}
+
+          # Lint using flake8
+          ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
+          ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
+
+          # Lint using autopep8
+          ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
 
       - name: Run Test ✅
         if: inputs.test == true
+        env:
+          test_continue_on_error: ${{ inputs.test_continue_on_error == true }}
+        continue-on-error: ${{ env.test_continue_on_error == 'true' }}
         run: |
           pytest \
             --verbosity=${{ inputs.test_verbosity }} \
             --capture=${{ inputs.test_capture_method }} \
             ${{ inputs.blender == true && '--blender-executable "$(< .blender-executable tr -d ''\n'')"' || '' }} \
             ${{ inputs.test_directory }}
-        env:
-          test_continue_on_error: ${{ inputs.test_continue_on_error == true }}
-        continue-on-error: ${{ env.test_continue_on_error == 'true' }}
