@@ -64,6 +64,18 @@ on:
         required: false
         default: false
 
+      lint_ruff:
+        description: Whether to do linting using ruff (needs to be installed)
+        type: boolean
+        required: false
+        default: false
+
+      lint_black:
+        description: Whether to do linting using black (needs to be installed)
+        type: boolean
+        required: false
+        default: false
+
       lint_continue_on_error:
         description: Whether to continue when an error occurs while doing linting
         type: boolean
@@ -120,7 +132,9 @@ jobs:
           (
             inputs.lint == true &&
             inputs.lint_flake8 == false &&
-            inputs.lint_autopep8 == false
+            inputs.lint_autopep8 == false &&
+            inputs.lint_ruff == false &&
+            inputs.lint_black == false
           ) ||
           (
             inputs.test == true &&
@@ -185,6 +199,8 @@ jobs:
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics' || '' }}
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
           ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
+          ${{ inputs.lint_ruff == true && 'ruff check .' || '' }}
+          ${{ inputs.lint_black == true && 'black --check .' || '' }}
         env:
           lint_continue_on_error: ${{ inputs.lint_continue_on_error == true }}
         continue-on-error: ${{ env.lint_continue_on_error == 'true' }} # Little hack because "inputs" is not available here
