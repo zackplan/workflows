@@ -200,7 +200,7 @@ jobs:
           ${{ inputs.lint_flake8 == true && 'flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics' || '' }}
           ${{ inputs.lint_autopep8 == true && 'autopep8 --in-place --aggressive --aggressive *.py' || '' }}
           ${{ inputs.lint_ruff == true && 'ruff check .' || '' }}
-          ${{ inputs.lint_black == true && 'black --check .' || '' }}
+          ${{ inputs.lint_black == true && 'black --check --diff .' || '' }}
         env:
           lint_continue_on_error: ${{ inputs.lint_continue_on_error == true }}
         continue-on-error: ${{ env.lint_continue_on_error == 'true' }} # Little hack because "inputs" is not available here
