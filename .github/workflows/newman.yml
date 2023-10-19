@@ -74,7 +74,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # pin@v3.0.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # pin@v3.0.0
 
       - name: Wait ${{ inputs.wait_until_healthy == true && 'until healthy' || format('{0} seconds', inputs.wait_seconds) }} 💤
         if: inputs.wait == true
