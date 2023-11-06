@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Call Webhook 📞
-        uses: distributhor/workflow-webhook@58116e2659a0aeab1893a68f0f2638d665296527 # pin@v2.0.3
+        uses: distributhor/workflow-webhook@f5a294e144d6ef44cfac4d3d5e20b613bcee0d4b # pin@v3.0.7
         env:
           webhook_url: ${{ secrets.url }}
           webhook_secret: ${{ secrets.secret || github.sha }}
