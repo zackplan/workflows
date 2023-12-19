@@ -166,7 +166,7 @@ jobs:
           version: 6.32.6
 
       - name: Setup Node.js 🛠
-        uses: actions/setup-node@56337c425554a6be30cdef71bf441f15be286854 # pin@v3.0.0
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # pin@v3.0.0
         with:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
